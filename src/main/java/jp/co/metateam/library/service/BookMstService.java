@@ -70,7 +70,7 @@ public class BookMstService {
         }
         return false;
     }
-    //ISBNバリデーション
+    //ISBNのバリデーション
     public boolean isValidIsbn (String isbn, Model model) {
         if (StringUtils.isEmpty(isbn)){
             model.addAttribute("errIsbn", "ISBNを入力してください" );

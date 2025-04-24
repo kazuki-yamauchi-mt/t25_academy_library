@@ -71,7 +71,7 @@ public class BookController {
                 }
 
 
-            //入力されたISBNがすでに登録されているかの確認
+            //入力されたISBNがすでに登録されているか確認
             boolean isbnExist = bookMstService.selectByIsbn(bookMstDto.getIsbn(), model);
 
             if (isbnExist) {
