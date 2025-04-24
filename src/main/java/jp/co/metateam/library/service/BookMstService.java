@@ -43,6 +43,62 @@ public class BookMstService {
         return bookMstDtoList;
     }
     
+    @Transactional
+    public void save(BookMstDto bookMstDto) {
+        try {
+            BookMst book = new BookMst(); 
+
+            book.setTitle(bookMstDto.getTitle());
+            book.setIsbn(bookMstDto.getIsbn());
+
+            //データベースへの保存
+            this.bookMstRepository.save(book);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+    
+    //書籍名バリデーション
+    public boolean isValidTitle (String title, Model model) {
+        if (StringUtils.isEmpty(title)){
+            model.addAttribute("errTitle", "書籍名を入力してください" );
+            return true;
+        } 
+        if (title.length() > 255){
+            model.addAttribute("errTitle", "書籍名は255文字以内で入力してください" );
+            return true;
+        }
+        return false;
+    }
+    //ISBNのバリデーション
+    public boolean isValidIsbn (String isbn, Model model) {
+        if (StringUtils.isEmpty(isbn)){
+            model.addAttribute("errIsbn", "ISBNを入力してください" );
+            return true;
+        } 
+        if (isbn.length() != 13){
+            model.addAttribute("errIsbn", "ISBNは13桁で入力してください" );
+            return true;
+        }
+        if (!isbn.matches("\\d+")){
+            model.addAttribute("errIsbn", "ISBNは半角数字で入力してください" );
+            return true;
+        }
+        return false;
+        
+    }
+
+    public boolean selectByIsbn(String isbn, Model model){
+        List<BookMst> books = this.bookMstRepository.selectByIsbn(isbn);
+
+        if (books.size() !=0){
+            model.addAttribute("errIsbn", "このISBNは既に登録されています");
+            return true;
+        }
+        return false;
+    }
+        
+    
 }
 
 

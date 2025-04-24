@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.validation.Valid;
+import jp.co.metateam.library.model.Account;
+import jp.co.metateam.library.model.AccountDto;
 import jp.co.metateam.library.model.BookMst;
 import jp.co.metateam.library.model.BookMstDto;
 import jp.co.metateam.library.service.BookMstService;
@@ -50,5 +52,46 @@ public class BookController {
 
         return "book/add";
     }
-    
+
+    @PostMapping("/book/add")
+    public String register(@Valid @ModelAttribute BookMstDto bookMstDto, BindingResult result, RedirectAttributes ra, Model model) {
+        try {
+
+            boolean Validtitle = bookMstService.isValidTitle(bookMstDto.getTitle(), model);
+            if (Validtitle) {
+                model.addAttribute ("bookMstDto",bookMstDto);
+            }
+
+            boolean Validisbn = bookMstService.isValidIsbn(bookMstDto.getIsbn(), model);
+            if (Validisbn) {
+                model.addAttribute ("bookMstDto",bookMstDto);
+            
+            }if (Validtitle || Validisbn) {
+                return "book/add";
+                }
+
+
+            //入力されたISBNがすでに登録されているか確認
+            boolean isbnExist = bookMstService.selectByIsbn(bookMstDto.getIsbn(), model);
+
+            if (isbnExist) {
+
+                model.addAttribute("bookMatDto", bookMstDto);
+                return "/book/add";
+
+            }
+
+
+            this.bookMstService.save(bookMstDto);
+
+                return "redirect:/book/index";
+        }
+        
+        catch (Exception e) {
+           
+            return "redirect:/book/add";
+
+        }
+    }
+
 }
